@@ -1,0 +1,28 @@
+{
+  "name": "stellafy",
+  "version": "1.0.0",
+  "main": "main.js",
+  "description": "High-fidelity SoundCloud Client",
+  "author": "Stellafy",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win"
+  },
+  "build": {
+    "appId": "com.stellafy.app",
+    "win": {
+      "target": "nsis",
+      "icon": "stellafy.ico"
+    }
+  },
+  "dependencies": {
+    "discord-rpc": "^4.0.1",
+    "electron-store": "^8.1.0",
+    "electron-updater": "^6.1.7",
+    "yt-dlp-wrap": "^2.3.12"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  }
+}

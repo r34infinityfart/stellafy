@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stellafy</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+</head>
+<body>
+
+    <!-- OVERLAYS -->
+    <div id="loading-screen">
+        <div class="pulse-logo">Stellafy</div>
+    </div>
+
+    <div id="toast">Action Completed</div>
+
+    <!-- Modal -->
+    <div id="modal-backdrop">
+        <div class="modal-content">
+            <h3 id="m-title">Alert</h3>
+            <p id="m-text">Message</p>
+            <input type="text" id="m-input" class="modal-input" style="display:none;">
+            <div class="modal-actions">
+                <button class="btn-text" id="m-cancel">Cancel</button>
+                <button class="btn-primary" id="m-confirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div id="about-overlay" style="display:none;">
+        <div class="modal-content">
+            <i class="fa-solid fa-music" style="font-size: 48px; color: var(--primary); margin-bottom: 20px;"></i>
+            <h3>Stellafy</h3>
+            <p style="color:#aaa; margin-bottom:20px;">v1.0.0 • Hybrid Audio Engine</p>
+            <button class="btn-primary" id="about-close">Close</button>
+        </div>
+    </div>
+
+    <!-- Context Menu -->
+    <div id="context-menu">
+        <div class="ctx-item" id="c-fav"><i class="fa-regular fa-heart"></i> Add to Favorites</div>
+        <div class="ctx-item" id="c-pl"><i class="fa-solid fa-list"></i> Add to Playlist</div>
+        <div class="ctx-sep"></div>
+        <div class="ctx-item" id="c-dl"><i class="fa-solid fa-download"></i> Download</div>
+    </div>
+
+    <!-- TITLE BAR -->
+    <div id="title-bar">
+        <span class="logo-text">STELLAFY</span>
+        <div id="title-bar-btns">
+            <button class="win-btn" id="btn-info"><i class="fa-solid fa-circle-info"></i></button>
+            <button class="win-btn" id="btn-min"><i class="fa-solid fa-minus"></i></button>
+            <button class="win-btn" id="btn-max"><i class="fa-regular fa-square"></i></button>
+            <button class="win-btn" id="btn-close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+    </div>
+
+    <!-- APP BODY -->
+    <div class="app-layout">
+        
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="nav-links">
+                <div class="nav-btn active" onclick="router('home')"><i class="fa-solid fa-house"></i> Home</div>
+                <div class="nav-btn" onclick="router('search')"><i class="fa-solid fa-magnifying-glass"></i> Search</div>
+                <div class="nav-btn" onclick="router('settings')"><i class="fa-solid fa-gear"></i> Settings</div>
+            </div>
+
+            <div class="library-root">
+                <div class="lib-header">
+                    <span>Library</span>
+                    <div style="display: flex; gap: 5px;">
+                        <button class="icon-btn" id="import-pl-btn" title="Import"><i class="fa-brands fa-spotify"></i></button>
+                        <button class="icon-btn" id="create-pl-btn" title="Create"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+                <ul id="playlists"></ul>
+            </div>
+
+            <div id="np-card-sidebar" style="display:none;">
+                <img id="np-img" src="">
+                <div class="np-overlay">
+                    <div class="np-overlay-title" id="np-card-title"></div>
+                    <div class="np-overlay-artist" id="np-card-artist"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN VIEW -->
+        <div class="main-view">
+            
+            <div id="view-home" class="view-section active">
+                <h1>Home</h1>
+                <h2>Recently Played</h2>
+                <div class="card-grid" id="history-grid"></div>
+            </div>
+
+            <div id="view-search" class="view-section">
+                <input type="text" id="search-input" placeholder="Search song or paste Spotify link...">
+                <h2>Recent Searches</h2>
+                <div id="recent-searches-list" class="recent-searches-container"></div>
+                <h2>Results</h2>
+                <div class="card-grid" id="search-results"></div>
+            </div>
+
+            <div id="view-library" class="view-section">
+                <div style="display:flex; gap:20px; align-items:flex-end; margin-bottom:20px;">
+                    <div style="width:180px; height:180px; background:#222; display:flex; align-items:center; justify-content:center;">
+                        <i class="fa-solid fa-music" style="font-size:50px; color:#555;"></i>
+                    </div>
+                    <div>
+                        <div style="font-size:12px; font-weight:700;">PLAYLIST</div>
+                        <h1 id="lib-name" style="margin:5px 0;">Favorites</h1>
+                        <div id="lib-meta" style="color:#aaa;">0 songs</div>
+                    </div>
+                </div>
+                <button class="play-btn" id="lib-play-big" style="width:50px; height:50px; font-size:20px; background:var(--primary); color:black; margin-bottom:20px;"><i class="fa-solid fa-play"></i></button>
+                <div id="lib-list"></div>
+            </div>
+
+            <div id="view-settings" class="view-section">
+                <h1>Settings</h1>
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <h3>Discord Rich Presence</h3>
+                        <p>Show current song on Discord</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="setting-discord">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- PLAYER BAR -->
+    <div class="player-bar">
+        <!-- Left: Info -->
+        <div class="pb-left">
+            <div id="pb-art-box"><img id="pb-art" src=""></div>
+            <div class="pb-info">
+                <div class="pb-title" id="pb-title"></div>
+                <div class="pb-artist" id="pb-artist"></div>
+            </div>
+            <button class="pb-heart" id="btn-like"><i class="fa-regular fa-heart"></i></button>
+        </div>
+
+        <!-- Center: Controls -->
+        <div class="pb-center">
+            <div class="controls">
+                <button class="ctrl-btn" id="btn-shuffle"><i class="fa-solid fa-shuffle"></i></button>
+                <button class="ctrl-btn" id="btn-prev"><i class="fa-solid fa-backward-step"></i></button>
+                <button class="play-btn" id="btn-play"><i class="fa-solid fa-play"></i></button>
+                <button class="ctrl-btn" id="btn-next"><i class="fa-solid fa-forward-step"></i></button>
+                <button class="ctrl-btn" id="btn-repeat"><i class="fa-solid fa-repeat"></i></button>
+            </div>
+            <div class="progress-bar-area">
+                <span id="t-curr">0:00</span>
+                <div class="slider-container" id="prog-cont">
+                    <div class="slider-rail"><div class="slider-fill" id="prog-fill"></div></div>
+                </div>
+                <span id="t-total">0:00</span>
+            </div>
+        </div>
+
+        <!-- Right: Actions -->
+        <div class="pb-right">
+            <button class="ctrl-btn" id="btn-dl"><i class="fa-solid fa-download"></i></button>
+            <i class="fa-solid fa-volume-high" style="color:#aaa; font-size:14px; margin-right:5px;"></i>
+            <input type="range" id="vol-slider" min="0" max="1" step="0.01">
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>
